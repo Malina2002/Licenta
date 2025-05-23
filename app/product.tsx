@@ -1,7 +1,9 @@
 // app/product.tsx
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'expo-router';
+import { Button } from 'react-native';
 
 export default function ProductScreen() {
   const { code } = useLocalSearchParams<{ code: string }>();
@@ -29,13 +31,20 @@ export default function ProductScreen() {
   if (!product) return <Text>Produsul nu a fost găsit.</Text>;
 
   return (
+  <>
     <ScrollView style={styles.container}>
       <Text style={styles.title}>{product.product_name || 'Nume necunoscut'}</Text>
       <Text>Marcă: {product.brands || 'N/A'}</Text>
       <Text>Categorie: {product.categories || 'N/A'}</Text>
       <Text>Ingrediente: {product.ingredients_text || 'N/A'}</Text>
     </ScrollView>
-  );
+
+    {/* Butonul pentru scanare din nou */}
+    <View style={{ padding: 20 }}>
+      <Button title="Scanează alt produs" onPress={() => router.replace('/scan')} />
+    </View>
+  </>
+);
 }
 
 const styles = StyleSheet.create({
