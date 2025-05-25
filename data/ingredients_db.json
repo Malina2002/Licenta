@@ -1,0 +1,159 @@
+[
+  {
+    "name": "Parabens",
+    "aliases": [
+      "methylparaben",
+      "ethylparaben",
+      "propylparaben",
+      "butylparaben"
+    ],
+    "category": "dangerous"
+  },
+  {
+    "name": "Sodium Lauryl Sulfate",
+    "aliases": [
+      "sodium lauryl sulfate",
+      "sls"
+    ],
+    "category": "dangerous"
+  },
+  {
+    "name": "Triclosan",
+    "aliases": [
+      "triclosan"
+    ],
+    "category": "dangerous"
+  },
+  {
+    "name": "Phthalates",
+    "aliases": [
+      "phthalate",
+      "dibutyl phthalate",
+      "diethyl phthalate",
+      "dbp",
+      "dep"
+    ],
+    "category": "dangerous"
+  },
+  {
+    "name": "Formaldehyde releasers",
+    "aliases": [
+      "formaldehyde",
+      "dmdm hydantoin",
+      "imidazolidinyl urea",
+      "diazolidinyl urea"
+    ],
+    "category": "dangerous"
+  },
+  {
+    "name": "BHA",
+    "aliases": [
+      "butylated hydroxyanisole",
+      "bha"
+    ],
+    "category": "dangerous"
+  },
+  {
+    "name": "BHT",
+    "aliases": [
+      "butylated hydroxytoluene",
+      "bht"
+    ],
+    "category": "dangerous"
+  },
+  {
+    "name": "PEGs",
+    "aliases": [
+      "polyethylene glycol",
+      "peg-8",
+      "peg-40"
+    ],
+    "category": "dangerous"
+  },
+  {
+    "name": "Oxybenzone",
+    "aliases": [
+      "oxybenzone"
+    ],
+    "category": "dangerous"
+  },
+  {
+    "name": "Coal Tar",
+    "aliases": [
+      "coal tar"
+    ],
+    "category": "dangerous"
+  },
+  {
+    "name": "Alcohol Denat",
+    "aliases": [
+      "alcohol denat",
+      "denatured alcohol"
+    ],
+    "category": "borderline"
+  },
+  {
+    "name": "Fragrance",
+    "aliases": [
+      "fragrance",
+      "parfum"
+    ],
+    "category": "borderline"
+  },
+  {
+    "name": "Limonene",
+    "aliases": [
+      "limonene"
+    ],
+    "category": "borderline"
+  },
+  {
+    "name": "Linalool",
+    "aliases": [
+      "linalool"
+    ],
+    "category": "borderline"
+  },
+  {
+    "name": "Citronellol",
+    "aliases": [
+      "citronellol"
+    ],
+    "category": "borderline"
+  },
+  {
+    "name": "Geraniol",
+    "aliases": [
+      "geraniol"
+    ],
+    "category": "borderline"
+  },
+  {
+    "name": "Coumarin",
+    "aliases": [
+      "coumarin"
+    ],
+    "category": "borderline"
+  },
+  {
+    "name": "Phenoxyethanol",
+    "aliases": [
+      "phenoxyethanol"
+    ],
+    "category": "borderline"
+  },
+  {
+    "name": "Propylene Glycol",
+    "aliases": [
+      "propylene glycol"
+    ],
+    "category": "borderline"
+  },
+  {
+    "name": "Talc",
+    "aliases": [
+      "talc"
+    ],
+    "category": "borderline"
+  }
+]
