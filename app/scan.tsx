@@ -48,7 +48,7 @@ export default function ScanScreen() {
       />
       {scanned && (
         <View style={styles.buttonContainer}>
-          <Button title="Scanează din nou" onPress={() => setScanned(false)} />
+          <Button title=" Rescan" onPress={() => setScanned(false)} />
         </View>
       )}
     </View>

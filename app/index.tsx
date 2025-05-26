@@ -6,8 +6,9 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Bine ai venit în BeautyScan</Text>
-      <Button title="Scanează un produs" onPress={() => router.push('/scan')} />
+      <Text style={styles.title}> Welcome to BeautyScan</Text>
+      <Button title="Scan a product" onPress={() => router.push('/scan')} />
+
     </View>
   );
 }

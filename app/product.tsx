@@ -37,7 +37,7 @@ export default function ProductScreen() {
           }
         }
       } catch (error) {
-        console.error('Eroare la preluarea produsului:', error);
+        console.error('Error retrieving the product:', error);
       } finally {
         setLoading(false);
       }
@@ -52,10 +52,10 @@ export default function ProductScreen() {
   return (
     <>
       <ScrollView style={styles.container}>
-        <Text style={styles.title}>{product.product_name || 'Nume necunoscut'}</Text>
-        <Text>Marcă: {product.brands || 'N/A'}</Text>
-        <Text>Categorie: {product.categories || 'N/A'}</Text>
-        <Text>Ingrediente brute:</Text>
+        <Text style={styles.title}>{product.product_name || 'Unknown name'}</Text>
+        <Text>Brand: {product.brands || 'N/A'}</Text>
+        <Text>Category: {product.categories || 'N/A'}</Text>
+        <Text>Ingredients:</Text>
         <Text>{product.ingredients_text || 'N/A'}</Text>
 
         {/* Status + explicație */}
@@ -70,35 +70,35 @@ export default function ProductScreen() {
           <Text style={styles.statusTitle}>
             Status:{" "}
             {safetyStatus === 'dangerous'
-              ? '❌ Periculos'
+              ? '❌ Dangerous'
               : safetyStatus === 'borderline'
-              ? '⚠️ La limită'
-              : '✅ Sigur'}
+              ? '⚠️ Borderline'
+              : '✅ Safe'}
           </Text>
           <Text style={styles.statusText}>
             {safetyStatus === 'dangerous' &&
-              'Acest produs conține unul sau mai multe ingrediente recunoscute ca fiind periculoase. Utilizarea frecventă poate cauza iritații sau efecte adverse pe termen lung.'}
+              'This product contains one or more ingredients known to be hazardous. Frequent use may cause irritation or long-term adverse effects.'}
             {safetyStatus === 'borderline' &&
-              'Acest produs conține ingrediente care pot fi controversate sau iritante pentru unele tipuri de piele. A se folosi cu precauție.'}
+              'This product contains ingredients that may be controversial or irritating for certain skin types. Use with caution.'}
             {safetyStatus === 'safe' &&
-              'Produsul nu conține ingrediente considerate periculoase sau controversate. Este sigur pentru utilizare obișnuită.'}
+              'This product does not contain any ingredients considered hazardous or controversial. It is safe for regular use.'}
           </Text>
         </View>
 
-        {/* Ingrediente periculoase */}
+        {/* dangerous */}
         {matchedDangerous.length > 0 && (
           <View style={{ marginTop: 10 }}>
-            <Text style={{ fontWeight: 'bold', color: 'red' }}> Ingrediente periculoase:</Text>
+            <Text style={{ fontWeight: 'bold', color: 'red' }}> Dangerous ingredients:</Text>
             {matchedDangerous.map((ing, idx) => (
               <Text key={idx} style={{ color: 'red' }}>• {ing}</Text>
             ))}
           </View>
         )}
 
-        {/* Ingrediente la limită */}
+        {/* borderline */}
         {matchedBorderline.length > 0 && (
           <View style={{ marginTop: 10 }}>
-            <Text style={{ fontWeight: 'bold', color: 'orange' }}> Ingrediente la limită:</Text>
+            <Text style={{ fontWeight: 'bold', color: 'orange' }}> Borderline ingredients:</Text>
             {matchedBorderline.map((ing, idx) => (
               <Text key={idx} style={{ color: 'orange' }}>• {ing}</Text>
             ))}
@@ -106,9 +106,9 @@ export default function ProductScreen() {
         )}
       </ScrollView>
 
-      {/* Butonul pentru scanare din nou */}
+      {/* Scan another product */}
       <View style={{ padding: 20 }}>
-        <Button title="Scanează alt produs" onPress={() => router.replace('/scan')} />
+        <Button title="Scan another product" onPress={() => router.replace('/scan')} />
       </View>
     </>
   );
