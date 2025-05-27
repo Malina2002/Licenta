@@ -11,28 +11,34 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#fceeee"
     },
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#fceeee"
       },
       "edgeToEdgeEnabled": true,
       "permissions": [
-        "CAMERA"
-      ]
+        "CAMERA",
+        "RECORD_AUDIO"
+      ],
+      "package": "com.anonymous.BeautyScan"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/icon.png"
     },
     "plugins": [
       "expo-router",
       "expo-camera",
-      "expo-barcode-scanner"
+      "expo-barcode-scanner",
+      "expo-font"
+    ],
+    "assetBundlePatterns": [
+      "**/*"
     ]
   }
 }

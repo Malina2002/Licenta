@@ -1,7 +1,7 @@
-// app/product.tsx
 import { router, useLocalSearchParams } from 'expo-router';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Button, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, ImageBackground } from 'react-native';
 import { useEffect, useState } from 'react';
+import { Text, Button, ActivityIndicator, Card, Divider, Badge } from 'react-native-paper';
 import { classifyIngredients } from '../utils/ingredientCheck';
 import { saveProductToHistory } from '../utils/historyStorage';
 
@@ -20,9 +20,8 @@ export default function ProductScreen() {
         const data = await response.json();
 
         if (!data.product || !data.product.ingredients_text) {
-          Alert.alert('Produsul nu este disponibil', 'Nu am găsit date utile pentru acest produs.', [
-            { text: 'OK', onPress: () => router.replace('/') }
-          ]);
+          alert('Nu am găsit date utile pentru acest produs.');
+          router.replace('/');
           return;
         }
 
@@ -46,10 +45,9 @@ export default function ProductScreen() {
         });
 
       } catch (error) {
-        console.error('Eroare la preluarea produsului:', error);
-        Alert.alert('Eroare', 'A apărut o problemă. Încercați din nou.', [
-          { text: 'OK', onPress: () => router.replace('/') }
-        ]);
+        console.error('Eroare:', error);
+        alert('A apărut o problemă.');
+        router.replace('/');
       } finally {
         setLoading(false);
       }
@@ -58,94 +56,170 @@ export default function ProductScreen() {
     fetchProduct();
   }, [code]);
 
-  if (loading) return <ActivityIndicator style={{ marginTop: 20 }} />;
-
-  if (!product) return null; // prevenim crashuri suplimentare
+  if (loading) return <ActivityIndicator animating={true} style={{ marginTop: 50 }} color="#B07F6D" />;
+  if (!product) return null;
 
   return (
-    <>
-      <ScrollView style={styles.container}>
-        <Text style={styles.title}>{product.product_name || 'Unknown name'}</Text>
-        <Text>Brand: {product.brands || 'N/A'}</Text>
-        <Text>Category: {product.categories || 'N/A'}</Text>
-        <Text>Ingredients:</Text>
-        <Text>{product.ingredients_text || 'N/A'}</Text>
+    <ImageBackground
+      source={require('../assets/background.png')}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Text style={styles.title}>{product.product_name || 'Unknown Product'}</Text>
+        <Text style={styles.label}>Brand: <Text style={styles.value}>{product.brands || 'N/A'}</Text></Text>
+        <Text style={styles.label}>Category: <Text style={styles.value}>{product.categories || 'N/A'}</Text></Text>
 
-        <View
-          style={[
-            styles.statusBox,
-            safetyStatus === 'dangerous' && { backgroundColor: '#ffe5e5' },
-            safetyStatus === 'borderline' && { backgroundColor: '#fff4e5' },
-            safetyStatus === 'safe' && { backgroundColor: '#e7ffe5' },
-          ]}
-        >
-          <Text style={styles.statusTitle}>
-            Status:{" "}
-            {safetyStatus === 'dangerous'
-              ? '❌ Dangerous'
-              : safetyStatus === 'borderline'
-              ? '⚠️ Borderline'
-              : '✅ Safe'}
-          </Text>
-          <Text style={styles.statusText}>
-            {safetyStatus === 'dangerous' &&
-              'This product contains one or more ingredients known to be hazardous.'}
-            {safetyStatus === 'borderline' &&
-              'This product contains ingredients that may be controversial or irritating.'}
-            {safetyStatus === 'safe' &&
-              'This product does not contain any ingredients considered hazardous or controversial.'}
-          </Text>
-        </View>
+        <Divider style={{ marginVertical: 15 }} />
+
+        <Text style={styles.sectionTitle}>Ingredients</Text>
+        <Text style={styles.ingredients}>{product.ingredients_text || 'N/A'}</Text>
+
+        <Card style={[styles.statusBox, statusColors[safetyStatus]]}>
+          <Card.Content>
+            <Text style={styles.statusTitle}>
+              {safetyStatus === 'dangerous'
+                ? '❌ Dangerous'
+                : safetyStatus === 'borderline'
+                ? '⚠️ Borderline'
+                : '✅ Safe'}
+            </Text>
+            <Text style={styles.statusText}>
+              {safetyStatus === 'dangerous' &&
+                'This product contains one or more ingredients known to be hazardous.'}
+              {safetyStatus === 'borderline' &&
+                'This product contains ingredients that may be controversial or irritating.'}
+              {safetyStatus === 'safe' &&
+                'This product does not contain any hazardous or controversial ingredients.'}
+            </Text>
+          </Card.Content>
+        </Card>
 
         {matchedDangerous.length > 0 && (
-          <View style={{ marginTop: 10 }}>
-            <Text style={{ fontWeight: 'bold', color: 'red' }}>Dangerous ingredients:</Text>
+          <View style={styles.listContainer}>
+            <Text style={styles.dangerTitle}>Dangerous ingredients:</Text>
             {matchedDangerous.map((ing, idx) => (
-              <Text key={idx} style={{ color: 'red' }}>• {ing}</Text>
+              <Text key={idx} style={styles.dangerItem}>• {ing}</Text>
             ))}
           </View>
         )}
 
         {matchedBorderline.length > 0 && (
-          <View style={{ marginTop: 10 }}>
-            <Text style={{ fontWeight: 'bold', color: 'orange' }}>Borderline ingredients:</Text>
+          <View style={styles.listContainer}>
+            <Text style={styles.borderlineTitle}>Borderline ingredients:</Text>
             {matchedBorderline.map((ing, idx) => (
-              <Text key={idx} style={{ color: 'orange' }}>• {ing}</Text>
+              <Text key={idx} style={styles.borderlineItem}>• {ing}</Text>
             ))}
           </View>
         )}
-      </ScrollView>
 
-      <View style={{ padding: 20 }}>
-        <Button title="Scan another product" onPress={() => router.replace('/scan')} />
-        <Button title="Vezi istoric" onPress={() => router.push('/history')} />
-      </View>
-    </>
+        <View style={styles.footer}>
+          <Button
+            mode="outlined"
+            onPress={() => router.replace('/scan')}
+            style={styles.footerButton}
+            labelStyle={{ color: '#B07F6D' }}
+          >
+            Scan another product
+          </Button>
+          <Button
+            mode="contained"
+            onPress={() => router.push('/history')}
+            style={[styles.footerButton, styles.historyButton]}
+            labelStyle={{ color: '#fff' }}
+          >
+            Vezi istoric
+          </Button>
+        </View>
+      </ScrollView>
+    </ImageBackground>
   );
 }
 
+const statusColors = {
+  dangerous: { backgroundColor: '#ffe5e5' },
+  borderline: { backgroundColor: '#fff4e5' },
+  safe: { backgroundColor: '#e7ffe5' },
+};
+
 const styles = StyleSheet.create({
-  container: {
+  background: {
+    flex: 1,
+  },
+  scrollContent: {
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    borderRadius: 16,
+    margin: 10,
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
+    color: '#5E3A2F',
     marginBottom: 10,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#7A4E3B',
+  },
+  value: {
+    fontWeight: '400',
+    color: '#444',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 15,
+    color: '#B07F6D',
+  },
+  ingredients: {
+    fontSize: 14,
+    color: '#333',
+    marginTop: 5,
   },
   statusBox: {
     marginTop: 20,
-    padding: 15,
-    borderRadius: 8,
+    borderRadius: 12,
   },
   statusTitle: {
+    fontSize: 18,
     fontWeight: 'bold',
-    fontSize: 16,
-    marginBottom: 5,
+    marginBottom: 6,
+    color: '#5E3A2F',
   },
   statusText: {
     fontSize: 14,
     color: '#555',
+  },
+  listContainer: {
+    marginTop: 20,
+  },
+  dangerTitle: {
+    fontWeight: 'bold',
+    color: 'red',
+    marginBottom: 5,
+  },
+  dangerItem: {
+    color: 'red',
+  },
+  borderlineTitle: {
+    fontWeight: 'bold',
+    color: 'orange',
+    marginBottom: 5,
+  },
+  borderlineItem: {
+    color: 'orange',
+  },
+  footer: {
+    marginTop: 30,
+    paddingBottom: 40,
+  },
+  footerButton: {
+    marginVertical: 6,
+    borderRadius: 10,
+  },
+  historyButton: {
+    backgroundColor: '#B07F6D',
   },
 });
