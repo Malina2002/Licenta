@@ -1,8 +1,9 @@
 // app/product.tsx
 import { router, useLocalSearchParams } from 'expo-router';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Button } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Button, Alert } from 'react-native';
 import { useEffect, useState } from 'react';
 import { classifyIngredients } from '../utils/ingredientCheck';
+import { saveProductToHistory } from '../utils/historyStorage';
 
 export default function ProductScreen() {
   const { code } = useLocalSearchParams<{ code: string }>();
@@ -18,26 +19,37 @@ export default function ProductScreen() {
         const response = await fetch(`https://world.openbeautyfacts.org/api/v0/product/${code}.json`);
         const data = await response.json();
 
-        if (data.product) {
-          setProduct(data.product);
-
-          if (data.product.ingredients_text) {
-            const results = classifyIngredients(data.product.ingredients_text);
-            setMatchedDangerous(results.dangerous);
-            setMatchedBorderline(results.borderline);
-
-            // Determinăm statusul produsului
-            if (results.dangerous.length > 0) {
-              setSafetyStatus('dangerous');
-            } else if (results.borderline.length > 0) {
-              setSafetyStatus('borderline');
-            } else {
-              setSafetyStatus('safe');
-            }
-          }
+        if (!data.product || !data.product.ingredients_text) {
+          Alert.alert('Produsul nu este disponibil', 'Nu am găsit date utile pentru acest produs.', [
+            { text: 'OK', onPress: () => router.replace('/') }
+          ]);
+          return;
         }
+
+        setProduct(data.product);
+
+        const results = classifyIngredients(data.product.ingredients_text);
+        setMatchedDangerous(results.dangerous);
+        setMatchedBorderline(results.borderline);
+
+        let status: 'safe' | 'borderline' | 'dangerous' = 'safe';
+        if (results.dangerous.length > 0) status = 'dangerous';
+        else if (results.borderline.length > 0) status = 'borderline';
+
+        setSafetyStatus(status);
+
+        await saveProductToHistory({
+          code: code!,
+          name: data.product.product_name || 'Necunoscut',
+          status: status,
+          date: new Date().toISOString(),
+        });
+
       } catch (error) {
-        console.error('Error retrieving the product:', error);
+        console.error('Eroare la preluarea produsului:', error);
+        Alert.alert('Eroare', 'A apărut o problemă. Încercați din nou.', [
+          { text: 'OK', onPress: () => router.replace('/') }
+        ]);
       } finally {
         setLoading(false);
       }
@@ -47,7 +59,8 @@ export default function ProductScreen() {
   }, [code]);
 
   if (loading) return <ActivityIndicator style={{ marginTop: 20 }} />;
-  if (!product) return <Text>Produsul nu a fost găsit.</Text>;
+
+  if (!product) return null; // prevenim crashuri suplimentare
 
   return (
     <>
@@ -58,7 +71,6 @@ export default function ProductScreen() {
         <Text>Ingredients:</Text>
         <Text>{product.ingredients_text || 'N/A'}</Text>
 
-        {/* Status + explicație */}
         <View
           style={[
             styles.statusBox,
@@ -77,28 +89,26 @@ export default function ProductScreen() {
           </Text>
           <Text style={styles.statusText}>
             {safetyStatus === 'dangerous' &&
-              'This product contains one or more ingredients known to be hazardous. Frequent use may cause irritation or long-term adverse effects.'}
+              'This product contains one or more ingredients known to be hazardous.'}
             {safetyStatus === 'borderline' &&
-              'This product contains ingredients that may be controversial or irritating for certain skin types. Use with caution.'}
+              'This product contains ingredients that may be controversial or irritating.'}
             {safetyStatus === 'safe' &&
-              'This product does not contain any ingredients considered hazardous or controversial. It is safe for regular use.'}
+              'This product does not contain any ingredients considered hazardous or controversial.'}
           </Text>
         </View>
 
-        {/* dangerous */}
         {matchedDangerous.length > 0 && (
           <View style={{ marginTop: 10 }}>
-            <Text style={{ fontWeight: 'bold', color: 'red' }}> Dangerous ingredients:</Text>
+            <Text style={{ fontWeight: 'bold', color: 'red' }}>Dangerous ingredients:</Text>
             {matchedDangerous.map((ing, idx) => (
               <Text key={idx} style={{ color: 'red' }}>• {ing}</Text>
             ))}
           </View>
         )}
 
-        {/* borderline */}
         {matchedBorderline.length > 0 && (
           <View style={{ marginTop: 10 }}>
-            <Text style={{ fontWeight: 'bold', color: 'orange' }}> Borderline ingredients:</Text>
+            <Text style={{ fontWeight: 'bold', color: 'orange' }}>Borderline ingredients:</Text>
             {matchedBorderline.map((ing, idx) => (
               <Text key={idx} style={{ color: 'orange' }}>• {ing}</Text>
             ))}
@@ -106,9 +116,9 @@ export default function ProductScreen() {
         )}
       </ScrollView>
 
-      {/* Scan another product */}
       <View style={{ padding: 20 }}>
         <Button title="Scan another product" onPress={() => router.replace('/scan')} />
+        <Button title="Vezi istoric" onPress={() => router.push('/history')} />
       </View>
     </>
   );
