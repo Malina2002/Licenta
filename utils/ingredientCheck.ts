@@ -1,11 +1,12 @@
 import ingredientsDB from '../data/ingredients_db.json';
 
-export function classifyIngredients(text: string) {
+export function classifyIngredients(text: string, userAllergies: string[] = []) {
   const lowerText = text.toLowerCase();
   const found = {
     dangerous: [] as string[],
     borderline: [] as string[],
     safe: [] as string[],
+    allergens: [] as string[],
   };
 
   ingredientsDB.forEach(item => {
@@ -14,7 +15,15 @@ export function classifyIngredients(text: string) {
     );
 
     if (match) {
-      found[item.category as 'dangerous' | 'borderline' | 'safe'].push(item.name);
+      const category = item.category as 'dangerous' | 'borderline' | 'safe';
+      found[category].push(item.name);
+    }
+  });
+
+  // Verificare alergeni personalizați ai utilizatorului
+  userAllergies.forEach(allergen => {
+    if (lowerText.includes(allergen.toLowerCase()) && !found.allergens.includes(allergen)) {
+      found.allergens.push(allergen);
     }
   });
 

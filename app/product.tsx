@@ -1,9 +1,11 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { View, StyleSheet, ScrollView, ImageBackground } from 'react-native';
 import { useEffect, useState } from 'react';
-import { Text, Button, ActivityIndicator, Card, Divider, Badge } from 'react-native-paper';
+import { Text, Button, ActivityIndicator, Card, Divider } from 'react-native-paper';
 import { classifyIngredients } from '../utils/ingredientCheck';
 import { saveProductToHistory } from '../utils/historyStorage';
+import { auth, db } from '../firebaseConfig';
+import { doc, getDoc } from 'firebase/firestore';
 
 export default function ProductScreen() {
   const { code } = useLocalSearchParams<{ code: string }>();
@@ -11,6 +13,8 @@ export default function ProductScreen() {
   const [loading, setLoading] = useState(true);
   const [matchedDangerous, setMatchedDangerous] = useState<string[]>([]);
   const [matchedBorderline, setMatchedBorderline] = useState<string[]>([]);
+  const [matchedAllergens, setMatchedAllergens] = useState<string[]>([]);
+  const [warningText, setWarningText] = useState('');
   const [safetyStatus, setSafetyStatus] = useState<'safe' | 'borderline' | 'dangerous'>('safe');
 
   useEffect(() => {
@@ -20,28 +24,52 @@ export default function ProductScreen() {
         const data = await response.json();
 
         if (!data.product || !data.product.ingredients_text) {
-          alert('Nu am găsit date utile pentru acest produs.');
+          alert('We did not find any useful data for this product..');
           router.replace('/');
           return;
         }
 
         setProduct(data.product);
 
-        const results = classifyIngredients(data.product.ingredients_text);
+        // Fetch user allergies
+        const user = auth.currentUser;
+        let userAllergies: string[] = [];
+        if (user) {
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            userAllergies = userData.allergies || [];
+          }
+        }
+
+        const results = classifyIngredients(data.product.ingredients_text, userAllergies);
         setMatchedDangerous(results.dangerous);
         setMatchedBorderline(results.borderline);
+        setMatchedAllergens(results.allergens);
 
         let status: 'safe' | 'borderline' | 'dangerous' = 'safe';
-        if (results.dangerous.length > 0) status = 'dangerous';
-        else if (results.borderline.length > 0) status = 'borderline';
+        let warning = '';
+
+        if (results.dangerous.length > 0) {
+          status = 'dangerous';
+        } else if (results.borderline.length > 0) {
+          status = 'borderline';
+        }
+
+        if (results.allergens.length > 0) {
+          warning = `⚠️ Allergens detected: ${results.allergens.join(', ')}`;
+        }
 
         setSafetyStatus(status);
+        setWarningText(warning);
 
         await saveProductToHistory({
           code: code!,
           name: data.product.product_name || 'Necunoscut',
           status: status,
           date: new Date().toISOString(),
+          allergens: results.allergens,
+          warning: warning,
         });
 
       } catch (error) {
@@ -92,6 +120,7 @@ export default function ProductScreen() {
               {safetyStatus === 'safe' &&
                 'This product does not contain any hazardous or controversial ingredients.'}
             </Text>
+            {warningText && <Text style={styles.warningText}>{warningText}</Text>}
           </Card.Content>
         </Card>
 
@@ -109,6 +138,15 @@ export default function ProductScreen() {
             <Text style={styles.borderlineTitle}>Borderline ingredients:</Text>
             {matchedBorderline.map((ing, idx) => (
               <Text key={idx} style={styles.borderlineItem}>• {ing}</Text>
+            ))}
+          </View>
+        )}
+
+        {matchedAllergens.length > 0 && (
+          <View style={styles.listContainer}>
+            <Text style={styles.allergenTitle}>Allergens detected:</Text>
+            {matchedAllergens.map((all, idx) => (
+              <Text key={idx} style={styles.allergenItem}>• {all}</Text>
             ))}
           </View>
         )}
@@ -192,6 +230,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#555',
   },
+  warningText: {
+    fontSize: 14,
+    color: 'darkred',
+    marginTop: 10,
+    fontWeight: '600',
+  },
   listContainer: {
     marginTop: 20,
   },
@@ -210,6 +254,14 @@ const styles = StyleSheet.create({
   },
   borderlineItem: {
     color: 'orange',
+  },
+  allergenTitle: {
+    fontWeight: 'bold',
+    color: 'purple',
+    marginBottom: 5,
+  },
+  allergenItem: {
+    color: 'purple',
   },
   footer: {
     marginTop: 30,

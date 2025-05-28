@@ -1,4 +1,3 @@
-// utils/historyStorage.ts
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type HistoryProduct = {
@@ -6,6 +5,8 @@ export type HistoryProduct = {
   name: string;
   status: 'safe' | 'borderline' | 'dangerous';
   date: string;
+  allergens?: string[];
+  warning?: string;
 };
 
 export const saveProductToHistory = async (product: HistoryProduct) => {
@@ -21,7 +22,7 @@ export const saveProductToHistory = async (product: HistoryProduct) => {
 
     await AsyncStorage.setItem('history', JSON.stringify(updated));
   } catch (e) {
-    console.error('Eroare salvare istoric:', e);
+    console.error('Error saving history:', e);
   }
 };
 
@@ -30,7 +31,7 @@ export const getHistory = async (): Promise<HistoryProduct[]> => {
     const data = await AsyncStorage.getItem('history');
     return data ? JSON.parse(data) : [];
   } catch (e) {
-    console.error('Eroare la citire istoric:', e);
+    console.error('Error reading history:', e);
     return [];
   }
 };
@@ -43,6 +44,6 @@ export const deleteProductFromHistory = async (codeToDelete: string) => {
     const updated = parsed.filter(p => p.code !== codeToDelete);
     await AsyncStorage.setItem('history', JSON.stringify(updated));
   } catch (e) {
-    console.error('Eroare la ștergerea produsului din istoric:', e);
+    console.error('Error deleting product from history:', e);
   }
 };

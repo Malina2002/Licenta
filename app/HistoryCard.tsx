@@ -1,3 +1,4 @@
+// HistoryCard - components/HistoryCard.tsx
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import { Text, Button, Card, Badge } from 'react-native-paper';
@@ -55,35 +56,37 @@ export default function HistoryCard({ item, index, onDelete }: Props) {
     }
   };
 
+  const renderWarnings = () => {
+    if (item.warning) {
+      return <Text style={styles.warning}>{item.warning}</Text>;
+    }
+    return null;
+  };
+
   return (
     <Animated.View
       style={{
         opacity: itemOpacity,
         transform: [{ translateY: slideAnim }],
-        marginBottom: 12,
+        marginBottom: 20,
       }}
     >
       <Card style={styles.card}>
         <Card.Content>
           <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.code}>Cod: {item.code}</Text>
+          <Text style={styles.code}>Code: {item.code}</Text>
           <View style={styles.badge}>{getStatusLabel(item.status)}</View>
-          <Text style={styles.date}>
-            {new Date(item.date).toLocaleString()}
-          </Text>
+          {renderWarnings()}
+          <Text style={styles.date}>{new Date(item.date).toLocaleString()}</Text>
         </Card.Content>
-        <Card.Actions>
+        <Card.Actions style={styles.actions}>
           <Button
             mode="outlined"
             onPress={() => onDelete(item.code)}
-            style={{
-              borderColor: '#B07F6D',
-              borderWidth: 1.2,
-              borderRadius: 12,
-            }}
-            labelStyle={{ color: '#5E3A2F' }}
+            style={styles.button}
+            labelStyle={styles.buttonLabel}
           >
-            Șterge
+            Delete
           </Button>
         </Card.Actions>
       </Card>
@@ -93,32 +96,58 @@ export default function HistoryCard({ item, index, onDelete }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 12,
-    backgroundColor: 'rgba(252, 238, 238, 0.6)',
-    elevation: 3,
+    borderRadius: 16,
+    backgroundColor: 'rgba(252, 238, 238, 0.75)',
+    elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.15,
     shadowRadius: 6,
     borderWidth: 1,
-    borderColor: '#f5d2d2',
+    borderColor: '#f3caca',
+    paddingBottom: 10,
   },
   name: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#B07F6D',
-    marginBottom: 4,
+    marginBottom: 6,
+    textAlign: 'center',
   },
   code: {
     fontSize: 14,
     color: '#6a4e42',
-    marginBottom: 4,
+    marginBottom: 6,
+    textAlign: 'center',
   },
   badge: {
     marginVertical: 6,
+    alignItems: 'center',
+  },
+  warning: {
+    fontSize: 13,
+    color: '#a90000',
+    marginBottom: 6,
+    textAlign: 'center',
   },
   date: {
     fontSize: 12,
     color: '#8e6e6e',
+    textAlign: 'center',
+  },
+  actions: {
+    justifyContent: 'center',
+    paddingTop: 10,
+  },
+  button: {
+    borderColor: '#B07F6D',
+    borderWidth: 1.2,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+  },
+  buttonLabel: {
+    color: '#5E3A2F',
+    fontSize: 15,
   },
 });

@@ -1,3 +1,4 @@
+// ScanScreen - pages/scan.tsx
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';

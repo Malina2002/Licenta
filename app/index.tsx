@@ -1,12 +1,36 @@
-import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, ImageBackground, Animated, Platform, Pressable } from 'react-native';
-import { Text, Button, Provider as PaperProvider } from 'react-native-paper';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  View,
+  StyleSheet,
+  ImageBackground,
+  Animated,
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
+import {
+  Text,
+  Button,
+  Provider as PaperProvider,
+  Modal,
+  Portal,
+} from 'react-native-paper';
 import { useRouter } from 'expo-router';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { auth } from '../firebaseConfig';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function HomeScreen() {
   const router = useRouter();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
+  const [menuVisible, setMenuVisible] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) router.replace('/login');
+    });
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
     Animated.parallel([
@@ -32,10 +56,24 @@ export default function HomeScreen() {
       Animated.spring(scaleAnim, {
         toValue: 1,
         useNativeDriver: true,
-      })
+      }),
     ]).start(() => {
       router.push('/scan');
     });
+  };
+
+  const handleNavigation = (route: string) => {
+    setMenuVisible(false);
+    router.push(`/${route}`);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      router.replace('/login');
+    } catch (error: any) {
+      Alert.alert('Eroare la delogare', error.message);
+    }
   };
 
   return (
@@ -45,6 +83,10 @@ export default function HomeScreen() {
         resizeMode="cover"
         style={styles.background}
       >
+        <TouchableOpacity onPress={() => setMenuVisible(true)} style={styles.menuButton}>
+          <Ionicons name="menu" size={30} color="#ffffff" />
+        </TouchableOpacity>
+
         <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
           <Text style={styles.title}>Welcome to</Text>
           <View style={styles.spacer} />
@@ -60,6 +102,39 @@ export default function HomeScreen() {
             </Button>
           </Animated.View>
         </Animated.View>
+
+        <Portal>
+          <Modal
+            visible={menuVisible}
+            onDismiss={() => setMenuVisible(false)}
+            contentContainerStyle={styles.drawerContainer}
+          >
+            <View style={styles.drawerItem}>
+              <TouchableOpacity onPress={() => handleNavigation('profile')} style={styles.drawerItemRow}>
+                <Ionicons name="person-outline" size={20} color="#fff" />
+                <Text style={styles.drawerLabel}>Profile</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.drawerItem}>
+              <TouchableOpacity onPress={() => handleNavigation('history')} style={styles.drawerItemRow}>
+                <Ionicons name="time-outline" size={20} color="#fff" />
+                <Text style={styles.drawerLabel}>History</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.drawerItem}>
+              <TouchableOpacity onPress={() => handleNavigation('contact')} style={styles.drawerItemRow}>
+                <Ionicons name="mail-outline" size={20} color="#fff" />
+                <Text style={styles.drawerLabel}>Contact</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.drawerItem}>
+              <TouchableOpacity onPress={handleLogout} style={styles.drawerItemRow}>
+                <Ionicons name="log-out-outline" size={20} color="#fff" />
+                <Text style={styles.drawerLabel}>Logout</Text>
+              </TouchableOpacity>
+            </View>
+          </Modal>
+        </Portal>
       </ImageBackground>
     </PaperProvider>
   );
@@ -68,8 +143,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
   overlay: {
     flex: 1,
@@ -100,5 +173,38 @@ const styles = StyleSheet.create({
   buttonLabel: {
     fontSize: 16,
     color: 'white',
+  },
+  menuButton: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    zIndex: 10,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    padding: 8,
+    borderRadius: 20,
+  },
+  drawerContainer: {
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    width: '65%',
+    height: '100%',
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    paddingTop: 60,
+    paddingHorizontal: 10,
+    justifyContent: 'flex-start',
+  },
+  drawerItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+  },
+  drawerItemRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  drawerLabel: {
+    color: '#fff',
+    fontSize: 16,
+    marginLeft: 10,
   },
 });
