@@ -13,10 +13,7 @@ const firebaseConfig = {
   measurementId: "G-9GEC4T89B3"
 };
 
-// Evită dublarea inițializării aplicației Firebase
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-
-// Inițializează serviciile Firebase
 const auth = getAuth(app);
 const db = getFirestore(app);
 

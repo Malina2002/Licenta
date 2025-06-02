@@ -1,3 +1,4 @@
+//product
 import { router, useLocalSearchParams } from 'expo-router';
 import { View, StyleSheet, ScrollView, ImageBackground } from 'react-native';
 import { useEffect, useState } from 'react';

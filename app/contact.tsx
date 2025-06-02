@@ -16,11 +16,22 @@ export default function ContactScreen() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
 
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleSend = () => {
     if (!name.trim() || !email.trim() || !message.trim()) {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
+
+    if (!isValidEmail(email)) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address.');
+      return;
+    }
+
     Alert.alert('Message Sent', 'We will get back to you soon!');
     setName('');
     setEmail('');
