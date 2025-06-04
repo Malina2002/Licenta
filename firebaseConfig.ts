@@ -1,8 +1,8 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { initializeAuth, getReactNativePersistence } from 'firebase/auth/react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirestore } from 'firebase/firestore';
 
-// Configurația Firebase – înlocuiește valorile cu cele reale din Firebase Console
 const firebaseConfig = {
   apiKey: "AIzaSyCzZToZaRm8wwtELeZ5pujA7fW9Wazi7lQ",
   authDomain: "beautyscan-99d8d.firebaseapp.com",
@@ -14,7 +14,11 @@ const firebaseConfig = {
 };
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
+
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(AsyncStorage),
+});
+
 const db = getFirestore(app);
 
 export { auth, db };
