@@ -1,4 +1,3 @@
-//index
 import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
@@ -84,7 +83,11 @@ export default function HomeScreen() {
         resizeMode="cover"
         style={styles.background}
       >
-        <TouchableOpacity onPress={() => setMenuVisible(true)} style={styles.menuButton}>
+        <TouchableOpacity
+          testID="menuBtn"
+          onPress={() => setMenuVisible(true)}
+          style={styles.menuButton}
+        >
           <Ionicons name="menu" size={30} color="#ffffff" />
         </TouchableOpacity>
 
@@ -93,6 +96,7 @@ export default function HomeScreen() {
           <View style={styles.spacer} />
           <Animated.View style={{ transform: [{ scale: scaleAnim }], width: '80%' }}>
             <Button
+              testID="scanButton"
               mode="contained"
               contentStyle={styles.buttonContent}
               labelStyle={styles.buttonLabel}
@@ -129,7 +133,11 @@ export default function HomeScreen() {
               </TouchableOpacity>
             </View>
             <View style={styles.drawerItem}>
-              <TouchableOpacity onPress={handleLogout} style={styles.drawerItemRow}>
+              <TouchableOpacity
+                onPress={handleLogout}
+                style={styles.drawerItemRow}
+                testID="logoutBtn"
+              >
                 <Ionicons name="log-out-outline" size={20} color="#fff" />
                 <Text style={styles.drawerLabel}>Logout</Text>
               </TouchableOpacity>

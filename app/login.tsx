@@ -77,7 +77,8 @@ export default function LoginScreen() {
           secureTextEntry
         />
 
-        <TouchableOpacity onPress={handleLogin} style={styles.button}>
+        {/* 🔧 testID adăugat aici */}
+        <TouchableOpacity onPress={handleLogin} style={styles.button} testID="loginBtn">
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
 

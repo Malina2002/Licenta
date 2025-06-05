@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Alert,
   ImageBackground,
-  Platform,
   ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -73,9 +72,10 @@ export default function ProfileScreen() {
     <ImageBackground source={require('../assets/background2.jpg')} style={styles.background}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.overlay}>
-          <Text style={styles.title}>User Profile</Text>
+          <Text style={styles.title} testID="profileScreen">User Profile</Text>
 
           <TextInput
+            testID="usernameInput"
             style={styles.input}
             placeholder="Username"
             placeholderTextColor="#ffffffcc"
@@ -83,14 +83,23 @@ export default function ProfileScreen() {
             onChangeText={setUsername}
           />
 
-          <Text style={styles.subtitle}>Known Allergies:</Text>
+          <Text style={styles.subtitle} testID="allergyTitle">Known Allergies:</Text>
           <View style={styles.allergyList}>
-            {allergies.map((item, index) => (
-              <Text key={index} style={styles.listItem}>• {item}</Text>
-            ))}
+            {allergies.length > 0 ? (
+              allergies.map((item, index) => (
+                <Text key={index} testID="allergyItem" style={styles.listItem}>
+                  • {item}
+                </Text>
+              ))
+            ) : (
+              <Text testID="noAllergiesMsg" style={styles.listItem}>
+                No known allergies
+              </Text>
+            )}
           </View>
 
           <TextInput
+            testID="newAllergyInput"
             style={styles.input}
             placeholder="Add new allergy"
             placeholderTextColor="#ffffffcc"
@@ -98,15 +107,15 @@ export default function ProfileScreen() {
             onChangeText={setNewAllergy}
           />
 
-          <TouchableOpacity onPress={handleAddAllergy} style={styles.addButton}>
+          <TouchableOpacity testID="addAllergyBtn" onPress={handleAddAllergy} style={styles.addButton}>
             <Text style={styles.buttonText}>Add Allergy</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={handleSave} style={styles.button}>
+          <TouchableOpacity testID="saveProfileBtn" onPress={handleSave} style={styles.button}>
             <Text style={styles.buttonText}>Save Profile</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => router.push('/')} style={styles.backButton}>
+          <TouchableOpacity testID="backToHomeBtn" onPress={() => router.push('/')} style={styles.backButton}>
             <Text style={styles.buttonText}>Back to Home</Text>
           </TouchableOpacity>
         </View>

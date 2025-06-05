@@ -56,11 +56,18 @@ export default function ForgotPasswordScreen() {
           autoCapitalize="none"
         />
 
-        <TouchableOpacity onPress={handleReset} style={styles.button}>
+        <TouchableOpacity
+          onPress={handleReset}
+          style={styles.button}
+          testID="resetBtn" // 🔧 adăugat pentru test Cypress
+        >
           <Text style={styles.buttonText}>Send Reset Link</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.replace('/login')} style={styles.linkContainer}>
+        <TouchableOpacity
+          onPress={() => router.replace('/login')}
+          style={styles.linkContainer}
+        >
           <Text style={styles.link}>Back to Login</Text>
         </TouchableOpacity>
       </View>

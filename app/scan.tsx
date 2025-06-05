@@ -40,7 +40,7 @@ export default function ScanScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="scanScreen">
       <CameraView
         onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
         barcodeScannerSettings={{

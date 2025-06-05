@@ -41,10 +41,11 @@ export default function ContactScreen() {
   return (
     <ImageBackground source={require('../assets/background2.jpg')} style={styles.background}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.overlay}>
+        <View style={styles.overlay} testID="contactScreen">
           <Text style={styles.title}>Contact Us</Text>
 
           <TextInput
+            testID="contactNameInput"
             style={styles.input}
             placeholder="Name"
             placeholderTextColor="#ffffffcc"
@@ -53,6 +54,7 @@ export default function ContactScreen() {
           />
 
           <TextInput
+            testID="contactEmailInput"
             style={styles.input}
             placeholder="Email"
             placeholderTextColor="#ffffffcc"
@@ -62,6 +64,7 @@ export default function ContactScreen() {
           />
 
           <TextInput
+            testID="contactMessageInput"
             style={[styles.input, styles.textarea]}
             placeholder="Your message"
             placeholderTextColor="#ffffffcc"
@@ -71,11 +74,17 @@ export default function ContactScreen() {
             numberOfLines={4}
           />
 
-          <TouchableOpacity style={styles.button} onPress={handleSend}>
+          <TouchableOpacity
+            testID="contactSendButton"
+            style={styles.button}
+            onPress={handleSend}
+          >
             <Text style={styles.buttonText}>Send Message</Text>
           </TouchableOpacity>
 
-          <Text style={styles.contactInfo}>📧 support@beautyscan.com</Text>
+          <Text testID="contactText" style={styles.contactInfo}>
+            📧 support@beautyscan.com
+          </Text>
         </View>
       </ScrollView>
     </ImageBackground>

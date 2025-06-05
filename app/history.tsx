@@ -1,105 +1,93 @@
-// HistoryScreen - pages/history.tsx
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
-  FlatList,
   StyleSheet,
-  ImageBackground,
+  ScrollView,
+  Text,
   TouchableOpacity,
-  Platform,
 } from 'react-native';
-import { Text } from 'react-native-paper';
 import { useRouter } from 'expo-router';
-import {
-  getHistory,
-  deleteProductFromHistory,
-  HistoryProduct,
-} from '../utils/historyStorage';
-import HistoryCard from './HistoryCard';
+import { HistoryProduct, getHistory } from '../utils/historyStorage';
 
 export default function HistoryScreen() {
   const [history, setHistory] = useState<HistoryProduct[]>([]);
   const router = useRouter();
 
   useEffect(() => {
+    const loadHistory = async () => {
+      const saved = await getHistory();
+      setHistory(saved);
+    };
     loadHistory();
   }, []);
 
-  const loadHistory = async () => {
-    const data = await getHistory();
-    setHistory(data);
-  };
-
-  const handleDelete = async (code: string) => {
-    await deleteProductFromHistory(code);
-    loadHistory();
-  };
-
   return (
-    <ImageBackground
-      source={require('../assets/background.png')}
-      style={styles.background}
-      resizeMode="cover"
-    >
-      <View style={styles.overlay}>
-        <FlatList
-          ListHeaderComponent={() => (
-            <Text style={styles.title}>🧾 Scanned Product History</Text>
-          )}
-          data={history}
-          keyExtractor={(item) => item.code}
-          renderItem={({ item, index }) => (
-            <HistoryCard
-              item={item}
-              index={index}
-              onDelete={handleDelete}
-            />
-          )}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        />
+    <View style={styles.container} testID="historyScreen">
+      <ScrollView contentContainerStyle={styles.scroll}>
+        {history.length > 0 ? (
+          history.map((item, index) => (
+            <View key={index} style={styles.card} testID="historyItem">
+              <Text style={styles.title}>{item.name || 'Produs fără nume'}</Text>
+              <Text style={styles.subtitle}>Cod: {item.code}</Text>
+              <Text style={styles.subtitle}>Status: {item.status}</Text>
+            </View>
+          ))
+        ) : (
+          <Text style={styles.emptyText}>Nu există produse scanate</Text>
+        )}
+      </ScrollView>
 
-        <TouchableOpacity onPress={() => router.push('/')} style={styles.backButton}>
-          <Text style={styles.backButtonText}>Back to Home</Text>
-        </TouchableOpacity>
-      </View>
-    </ImageBackground>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => router.replace('/')}
+        testID="backToHomeBtn"
+      >
+        <Text style={styles.buttonText}>Back to Home</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  background: {
+  container: {
     flex: 1,
-  },
-  overlay: {
-    flex: 1,
+    backgroundColor: '#FFF1ED',
     padding: 20,
-    paddingBottom: Platform.OS === 'android' ? 40 : 60,
-    backgroundColor: 'rgba(252, 238, 238, 0.6)',
-    justifyContent: 'center',
+  },
+  scroll: {
+    paddingBottom: 20,
+  },
+  card: {
+    backgroundColor: '#FFE5DC',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 12,
   },
   title: {
-    fontSize: 26,
     fontWeight: 'bold',
+    fontSize: 16,
     color: '#5E3A2F',
-    marginBottom: 20,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#8B5E3C',
+  },
+  emptyText: {
+    marginTop: 50,
     textAlign: 'center',
+    fontSize: 16,
+    color: '#8B5E3C',
   },
-  backButton: {
-    backgroundColor: '#B07F6D',
-    borderRadius: 10,
-    paddingVertical: 14,
-    paddingHorizontal: 25,
-    marginTop: 20,
+  button: {
     alignSelf: 'center',
+    marginTop: 20,
+    backgroundColor: '#B07F6D',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
   },
-  backButtonText: {
+  buttonText: {
     color: 'white',
-    fontWeight: '600',
-    fontSize: 18,
-  },
-  scrollContent: {
-    paddingBottom: 120,
-    paddingTop: 20,
+    fontWeight: 'bold',
   },
 });
