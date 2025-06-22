@@ -20,7 +20,6 @@ export function classifyIngredients(text: string, userAllergies: string[] = []) 
     }
   });
 
-  // Verificare alergeni personalizați ai utilizatorului
   userAllergies.forEach(allergen => {
     if (lowerText.includes(allergen.toLowerCase()) && !found.allergens.includes(allergen)) {
       found.allergens.push(allergen);

@@ -12,11 +12,17 @@ import {
 import { useRouter } from 'expo-router';
 import { auth, db } from '../firebaseConfig';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
+import {
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  sendPasswordResetEmail,
+} from 'firebase/auth';
 
 export default function ProfileScreen() {
   const [username, setUsername] = useState('');
   const [allergies, setAllergies] = useState<string[]>([]);
   const [newAllergy, setNewAllergy] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
   const router = useRouter();
 
   useEffect(() => {
@@ -68,6 +74,31 @@ export default function ProfileScreen() {
     }
   };
 
+  const handlePasswordResetRequest = async () => {
+    const user = auth.currentUser;
+    if (!user || !user.email) {
+      Alert.alert('Error', 'User not authenticated.');
+      return;
+    }
+
+    if (!currentPassword.trim()) {
+      Alert.alert('Validation', 'Please enter your current password.');
+      return;
+    }
+
+    const credential = EmailAuthProvider.credential(user.email, currentPassword);
+
+    try {
+      await reauthenticateWithCredential(user, credential);
+      await sendPasswordResetEmail(auth, user.email);
+      Alert.alert('Success', 'Password reset email sent. Please check your inbox.');
+      setCurrentPassword('');
+    } catch (error: any) {
+      console.error(error);
+      Alert.alert('Error', 'The current password is incorrect or something went wrong.');
+    }
+  };
+
   return (
     <ImageBackground source={require('../assets/background2.jpg')} style={styles.background}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -113,6 +144,19 @@ export default function ProfileScreen() {
 
           <TouchableOpacity testID="saveProfileBtn" onPress={handleSave} style={styles.button}>
             <Text style={styles.buttonText}>Save Profile</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.subtitle}>Change Password:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter current password"
+            placeholderTextColor="#ffffffcc"
+            secureTextEntry
+            value={currentPassword}
+            onChangeText={setCurrentPassword}
+          />
+          <TouchableOpacity onPress={handlePasswordResetRequest} style={styles.button}>
+            <Text style={styles.buttonText}>Request Password Change</Text>
           </TouchableOpacity>
 
           <TouchableOpacity testID="backToHomeBtn" onPress={() => router.push('/')} style={styles.backButton}>

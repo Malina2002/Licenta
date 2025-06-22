@@ -167,7 +167,7 @@ export default function ProductScreen() {
             style={[styles.footerButton, styles.historyButton]}
             labelStyle={{ color: '#fff' }}
           >
-            Vezi istoric
+            Go to history
           </Button>
         </View>
       </ScrollView>

@@ -10,11 +10,14 @@ import {
   ScrollView,
   Platform,
 } from 'react-native';
+import * as Linking from 'expo-linking';
+import { useRouter } from 'expo-router';
 
 export default function ContactScreen() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const router = useRouter();
 
   const isValidEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -32,7 +35,14 @@ export default function ContactScreen() {
       return;
     }
 
-    Alert.alert('Message Sent', 'We will get back to you soon!');
+    const subject = encodeURIComponent(`Support Request from ${name}`);
+    const body = encodeURIComponent(
+      `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`
+    );
+    const mailtoUrl = `mailto:beautyscan.contact1@gmail.com?subject=${subject}&body=${body}`;
+
+    Linking.openURL(mailtoUrl);
+
     setName('');
     setEmail('');
     setMessage('');
@@ -82,8 +92,16 @@ export default function ContactScreen() {
             <Text style={styles.buttonText}>Send Message</Text>
           </TouchableOpacity>
 
+          <TouchableOpacity
+            testID="backToHomeButton"
+            style={styles.backButton}
+            onPress={() => router.push('/')}
+          >
+            <Text style={styles.buttonText}>Back to Home</Text>
+          </TouchableOpacity>
+
           <Text testID="contactText" style={styles.contactInfo}>
-            📧 support@beautyscan.com
+            📧 beautyscan.contact1@gmail.com
           </Text>
         </View>
       </ScrollView>
@@ -133,6 +151,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 10,
     marginTop: 10,
+    marginBottom: 10,
+  },
+  backButton: {
+    backgroundColor: '#6e6e6e',
+    paddingVertical: 12,
+    borderRadius: 10,
     marginBottom: 10,
   },
   buttonText: {
