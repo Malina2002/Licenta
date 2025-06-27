@@ -1,69 +1,93 @@
 # BeautyScan
 
-**BeautyScan** este o aplicație mobilă dezvoltată cu **React Native** și **Expo**, care le permite utilizatorilor să scaneze produse cosmetice și să verifice ingredientele acestora. Aplicația extrage informații din baza de date Open Beauty Facts și analizează siguranța ingredientelor în funcție de o bază proprie. Include funcționalități precum istoric de scanări, salvare preferințe, profil cu alergii și avertismente pentru ingrediente periculoase sau alergenice.
+**BeautyScan** este o aplicație mobilă dezvoltată cu **React Native** și **Expo**, care le permite utilizatorilor să scaneze produse cosmetice și să verifice ingredientele acestora.  
+Aplicația extrage informații din baza de date **Open Beauty Facts** și analizează siguranța ingredientelor în funcție de o bază proprie.  
+Include funcționalități precum: istoric de scanări, salvare preferințe, profil cu alergii și avertismente pentru ingrediente periculoase sau alergenice.
 
-
+---
 
 ## Livrabilele proiectului
 
-- Codul sursă complet (fără fișiere binare compilate).
-- Structură organizată pe componente și ecrane (`app/`, `data/`, `utils/`, `assets/`, etc.).
+- Codul sursă complet (fără fișiere binare compilate)
+- Structură organizată pe directoare (`app/`, `data/`, `utils/`, `assets/`, etc.)
 - Fișiere de configurare: `package.json`, `app.config.js`, `firebase.js`, etc.
 
+---
 
 ## Adresa repository-ului
 
-Repository-ul proiectului este disponibil la:
-
-
 https://github.com/Malina2002/Licenta
 
+---
 
 ## Pași de instalare și rulare
 
 ### 1. Clonarea repository-ului
 
+```bash
 git clone https://github.com/Malina2002/Licenta.git
 cd BeautyScan
+```
 
-# Instalează Node.js
-# Descarcă și instalează cea mai recentă versiune LTS de pe:
-# https://nodejs.org/
+### 2. Instalarea Node.js
 
-# După instalare, verifică versiunile:
+Descarcă și instalează cea mai recentă versiune LTS de pe:  
+https://nodejs.org/
+
+După instalare, verifică versiunile:
+
+```bash
 node -v
 npm -v
+```
 
-# Instaleare Expo CLI global 
+### 3. Instalarea Expo CLI
+
+```bash
 npm install -g expo-cli
+```
 
-# Instalarea tuturor dependențelor proiectului
+### 4. Instalarea dependențelor proiectului
+
+```bash
 npm install
+```
 
-# Dacă lipsește expo-camera sau alte module folosite:
+### 5. Instalarea modulelor necesare
+
+```bash
 npx expo install expo-camera
-
-# Instalarea și a altor module folosite în BeautyScan:
 npx expo install firebase
 npx expo install expo-router
 npx expo install @react-native-async-storage/async-storage
 npx expo install nativewind
 npx expo install expo-image-picker
 npx expo install expo-file-system
+```
 
-### 3. Pornirea aplicației
+### 6. Pornirea aplicației
 
-
+```bash
 npx expo start
+```
 
-Se scanează codul QR cu aplicația **Expo Go** (disponibilă pe Android și iOS) pentru a rula aplicația pe telefon.
+Scanează codul QR cu aplicația **Expo Go** (disponibilă pe Android și iOS) pentru a rula aplicația pe telefon.
+
+---
 
 ## Tehnologii utilizate
 
-- **React Native + Expo**
-- **Firebase Authentication și Firestore**
-- **Open Beauty Facts API**
-- **Google Cloud Vision OCR**
-- **AsyncStorage pentru date locale**
-- **TailwindCSS (via NativeWind) pentru design**
-- **expo-camera pentru scanare coduri și etichete**
+- React Native + Expo
+- Firebase Authentication și Firestore
+- Open Beauty Facts API
+- AsyncStorage pentru date locale
+- TailwindCSS (NativeWind) pentru design modern
+- expo-camera pentru scanare coduri de bare și etichete
+
+---
+
+## Observații
+
+- Codul nu include fișiere binare (ex: `.apk`, `.aab`, `.ipa`)
+- Cheile API sunt ascunse (prin `.env` sau `.gitignore`)
+- Repository-ul este pregătit pentru evaluarea de către comisie
